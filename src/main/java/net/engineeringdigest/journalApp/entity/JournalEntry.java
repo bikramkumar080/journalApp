@@ -1,18 +1,20 @@
 package net.engineeringdigest.journalApp.entity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Getter
-@Setter
+@Data
 @Entity
+@NoArgsConstructor
 public class JournalEntry {
     @Id
     private String id;
+    @Column(nullable = false)
     private String title;
     private String content;
-
+    private LocalDateTime date;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
