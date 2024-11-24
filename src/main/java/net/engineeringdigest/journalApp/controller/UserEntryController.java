@@ -2,6 +2,8 @@ package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.Service.JournalEntryService;
 import net.engineeringdigest.journalApp.Service.UserEntryService;
+import net.engineeringdigest.journalApp.Service.WeatherService;
+import net.engineeringdigest.journalApp.apiresponse.WeatherResponse;
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,11 @@ import java.util.UUID;
 public class UserEntryController {
     @Autowired
     private UserEntryService userEntryService;
+    @Autowired
+    private WeatherService weatherService;
 
 
-
-//    @GetMapping("id/{id}")
+    //    @GetMapping("id/{id}")
 //    public ResponseEntity<User> getUserEntryById(@PathVariable String id){
 //        Optional<User> userEntry = userEntryService.getEntryById(id);
 //        if (userEntry.isPresent()) {
@@ -56,5 +59,17 @@ public class UserEntryController {
           user.setPassword(newUser.getPassword());
           userEntryService.save(user);
           return new ResponseEntity<>(user , HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getJournalEntriesOfUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        WeatherResponse weather = weatherService.getWeather("Mumbai");
+        int temp = weather.getCurrent().getFeelslike();
+        if(!username.isEmpty()){
+            return new ResponseEntity<>(username + " Weather feels like "+temp, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
